@@ -1,4 +1,5 @@
-theme: minima
+remote-theme: minima
+  skin: auto
 title: Title in Progress..
 author: Aviv
 
