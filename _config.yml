@@ -1,4 +1,5 @@
-remote_theme: pages-themes/hacker
+# remote_theme: pages-themes/hacker
+theme: minima
 title: Title in Progress..
 description: Random stuff I want to elaborate on
 show_downloads: false
