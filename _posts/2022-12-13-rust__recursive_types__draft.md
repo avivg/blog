@@ -1,7 +1,7 @@
 ---
 title: Rust Recursive Types
 date: 2022-12-13 14:40 +02:00
-tags: [rust, rustlang, SoftwareEngineering]
+tags: [Rust, SoftwareEngineering]
 ---
 ## What do I mean by 'Recursive Type'
 A recursive type is a type that referres to itself. The classic examples are linked lists

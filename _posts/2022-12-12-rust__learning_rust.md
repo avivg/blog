@@ -1,7 +1,7 @@
 ---
 title: Learning Rust
 date: 2022-12-12 22:44 +02:00
-tags: [rust, rustlang, introduction]
+tags: [Rust, Introduction]
 ---
 
 ## Why Learn Another Language
