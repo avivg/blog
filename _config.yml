@@ -4,6 +4,7 @@ plugins:
 #theme: minima
 title: Title in Progress..
 description: Random stuff I want to elaborate on
+author: Aviv
 show_downloads: false
 github:
   is_project_page: false
