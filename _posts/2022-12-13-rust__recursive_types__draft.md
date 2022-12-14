@@ -8,14 +8,14 @@ A recursive type is a type that referres to itself. The classic examples are lin
 ```Rust
 // list
 struct Node {
-    value: ...
+    value: ...,
     next: Node,
 }
 ```
 and trees
 ```Rust
 struct Node {
-    value: ...
+    value: ...,
     left: Node,
     right: Node,
 }
