@@ -17,7 +17,10 @@ Each puzzle consists of 2 parts, where the 2nd part is only available after solv
 
 1. There are some serious adjustments for a C++ programmer, but it's very do-able and after investing a week or two, it feels very natural.
 2. After said adjustment, it became much easier for me to implement the puzzle solutions I came up with using Rust, compared to implementing the same solutions with C++.
-2.1. One reason is the true functional constructs, compared to my familiar C++17 with it's semi-functional-always-requires-begin-end concepts.
-2.2. Another important reason is 'Cargo'. It is priceless to work with such a convenient and transparent package-manager/build-system.
-2.3. The third reason is the rust-analyzer VSCode extension and the super friendly compiler errors of rustc.
+  * One reason is the true functional constructs, compared to my familiar C++17 with it's semi-functional-always-requires-begin-end concepts.
+  * Another important reason is 'Cargo'. It is priceless to work with such a convenient and transparent package-manager/build-system.
+  * The third reason is the rust-analyzer VSCode extension and the super friendly compiler errors of rustc.
 3. After spending so much time writing rust, going back to work with C++17 felt like such a downgrade. I really feel after 2-3 weeks of rust that I have all the tools to build my next project with it. I started looking into contributing to FOSS projects just to keep the momentum, but life and work may not really permit that kind of time investment.
+4. The performance difference between debug and release is enormous. That optimizer is really leaving up to its name.
+5. The number of resources for learning and asking questions is also surprisingly large for a "novel" language such as this. I used Mastodon, [reddit](reddit.com/r/rust), [doc.rust-lang.org] and [Stack Overflow](https://stackoverflow.com/questions/tagged/rust), and it still feels like there are may other user forums and resources to learn and find answers.
+6. I also encountered a lot of AoC participants that used Rust and published it on Mastodon. For a relativeley small network like mastodon, with the relatively marginal game such as AoC, I was surprised to find more rustaceans. Feels like this language is really up and coming. Here's hoping...
