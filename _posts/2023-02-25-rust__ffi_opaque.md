@@ -33,13 +33,13 @@ The implementation doesn't really matters, but in the [full example](https://git
 
 The first difficulty is how to define this opaque ```handle_t``` pointer. I found the answer in this [stack-overflow answer](https://stackoverflow.com/a/38315613/4016231), and it worked like a charm. I ended up with:
 
-```Rust
+{% highlight Rust %}
 #[repr(C)]
 pub struct CMyLib {
     _f: [u8; 0],
 }
 pub type MyLibHandle = *mut CMyLib;
-```
+{% endhighlight }
 
 Which I wanted to create with style, so I added:
 ```Rust
