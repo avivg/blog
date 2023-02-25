@@ -13,7 +13,7 @@ All the examples in this post are available in [github](https://github.com/avivg
 
 Suppose we have a C-API similar to:
 
-```C
+{% highlight C %}
 // mylib.h
 typedef enum {
     SUCCESS,
@@ -27,7 +27,7 @@ status_t mylib_create(handle_t* handle);
 status_t mylib_destroy(handle_t handle);
 status_t mylib_set(handle_t handle, int value);
 status_t mylib_dump(handle_t handle);
-```
+{% endhighlight %}
 
 The implementation doesn't really matters, but in the [full example](https://github.com/avivg/rust-opaque-example), it does some malloc, free, managing and integer field and dumps stuff.
 
@@ -41,18 +41,18 @@ pub struct CMyLib {
 pub type MyLibHandle = *mut CMyLib;
 {% endhighlight %}
 
-Which I wanted to create with style, so I added:
-```Rust
+Which I wanted to create a little more idiomatically, so I added:
+{% highlight Rust %}
 impl CMyLib {
     pub fn handle() -> MyLibHandle {
         std::ptr::null_mut()
     }
 }
-```
+{% endhighlight %}
 
 So now that I had my opaque struct pointer, add the declarations:
 
-```Rust
+{% highlight Rust %}
 #[derive(Debug)]
 #[repr(C)]
 pub enum Status {
@@ -67,17 +67,17 @@ extern "C" {
     fn mylib_set(handle: MyLibHandle, value: i32) -> Status;
     fn mylib_dump(handle: MyLibHandle) -> Status;
 }
-```
+{% endhighlight %}
 
 Followed by a Rust-style struct to wrap this object in "safe" code:
-```Rust
+{% highlight Rust %}
 pub struct MyLib {
     handle: MyLibHandle,
 }
-```
+{% endhighlight %}
 
 When it came to the double pointer in ```mylib_create```, I didn't find any text book solution. I used some guess-work and deduction from various posts and ended up with:
-```Rust
+{% highlight Rust %}
 impl MyLib {
     pub fn create() -> Result<Self, String> {
         let mut handle = CMyLib::handle();
@@ -87,5 +87,5 @@ impl MyLib {
         }
     }
     ...
-```
+{% endhighlight %}
 
