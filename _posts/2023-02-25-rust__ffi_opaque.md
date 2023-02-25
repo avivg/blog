@@ -101,4 +101,4 @@ impl Drop for MyLib {
     }
 }
 {% endhighlight %}
-which make sure that every created handle gets destroyed.
+which make sure that every created handle gets destroyed. This time, there is no alternative return value option, so in case of failure, ```panic!```ing it is.
