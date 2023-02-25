@@ -1,11 +1,10 @@
 ---
-title: Rust and Opaque C Structures
+title: C-Style Opaque Structure and Rust FFI
 date: 2023-02-25 18:00 +02:00
 tags: [Rust, C, FFI, C-API]
 ---
-## C-Style Opaque Structure and Rust FFI
 
-I finally got around to trying Rust in my day job. The first thing I needed is to make sure I know how anything I create can interract with our product (NN compiler). The API I wanted it to interract with, is a C-style API, which can be redeclared in rust pretty easily using the built-in standard FFI.
+I finally got around to trying Rust in my day job. The first thing I needed was to make sure I know how anything I create can interract with our product (NN compiler). The API I wanted it to interract with, is a C-style API, which can be redeclared in rust pretty easily using the built-in standard FFI.
 
 The challenge was with opaque structures that are forward-declared in the API and use double pointer handles for creation. This is a pretty common pattern in C-Style APIs, so I was surprised when I needed to look in several different places and apply some guess work on how to use it in Rust.
 
@@ -29,10 +28,9 @@ status_t mylib_set(handle_t handle, int value);
 status_t mylib_dump(handle_t handle);
 {% endhighlight %}
 
-The implementation doesn't really matters, but in the [full example](https://github.com/avivg/rust-opaque-example), it does some malloc, free, managing and integer field and dumps stuff.
+The implementation doesn't really matter, but in the [full example](https://github.com/avivg/rust-opaque-example), it does some malloc, free, managing an integer field and dumps stuff.
 
-The first difficulty is how to define this opaque ```handle_t``` pointer. I found the answer in this [stack-overflow answer](https://stackoverflow.com/a/38315613/4016231), and it worked like a charm. I ended up with:
-
+The first difficulty is how to define this opaque ```handle_t``` pointer. I found this [stack-overflow answer](https://stackoverflow.com/a/38315613/4016231), and it worked like a charm. I ended up with:
 {% highlight Rust %}
 #[repr(C)]
 pub struct CMyLib {
@@ -50,8 +48,7 @@ impl CMyLib {
 }
 {% endhighlight %}
 
-So now that I had my opaque struct pointer, add the declarations:
-
+So now that I had my opaque struct pointer, I could add the declarations:
 {% highlight Rust %}
 #[derive(Debug)]
 #[repr(C)]
@@ -76,7 +73,7 @@ pub struct MyLib {
 }
 {% endhighlight %}
 
-When it came to the double pointer in ```mylib_create```, I didn't find any text book solution. I used some guess-work and deduction from various posts and ended up with:
+When it came to the double pointer in ```mylib_create```, I didn't find any text-book solution. I used some guess-work and deduction from various posts and ended up with:
 {% highlight Rust %}
 impl MyLib {
     pub fn create() -> Result<Self, String> {
@@ -89,3 +86,19 @@ impl MyLib {
     ...
 {% endhighlight %}
 
+This will create a ```null``` handle using ```CMyLib::handle()``` and then pass the *address* of the newly created pointer to ```mylib_create```. This is exactly what a C/C++ code that use this API has to do.
+
+TBH, I'm not a huge fan of this result, since I wanted a ```MyLib::new()```, but that usually does not fail. I could ```panic!``` if the creation fail inside a '```new()```', but it seems somehow conflicting with the option to return ```FAIL``` from the C-style creator.
+
+To finish off this description, I should mention the other half of the "safe" code - the Drop:
+{% highlight Rust %}
+impl Drop for MyLib {
+    fn drop(&mut self) {
+        let Status::Success = (unsafe { mylib_destroy(self.handle) })
+        else {
+            panic!("Something went wrong");
+        };
+    }
+}
+{% endhighlight %}
+which make sure that every created handle gets destroyed.
