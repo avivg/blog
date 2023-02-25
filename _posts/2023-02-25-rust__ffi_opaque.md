@@ -39,7 +39,7 @@ pub struct CMyLib {
     _f: [u8; 0],
 }
 pub type MyLibHandle = *mut CMyLib;
-{% endhighlight }
+{% endhighlight %}
 
 Which I wanted to create with style, so I added:
 ```Rust
