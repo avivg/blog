@@ -4,9 +4,6 @@ date: 2023-02-25 18:00 +02:00
 tags: [Rust, C, FFI, C-API]
 ---
 
-[2023-02-26 Update]: [u/frxstrem](https://www.reddit.com/r/rust/comments/11buo0f/comment/ja0v1gc/?utm_source=reddit&utm_medium=web2x&context=3) and [u/CocktailPerson](https://www.reddit.com/r/rust/comments/11buo0f/comment/ja1koa7/?utm_source=reddit&utm_medium=web2x&context=3) enlightened me to the need to add PhantomData and suggested that the repr(C) structs should not be public. Many thanks!
-
----
 I finally got around to trying Rust in my day job. The first thing I needed was to make sure I know how anything I create can interract with our product (NN compiler). The API I wanted it to interract with, is a C-style API, which can be redeclared in rust pretty easily using the built-in standard FFI.
 
 The challenge was with opaque structures that are forward-declared in the API and use double pointer handles for creation. This is a pretty common pattern in C-Style APIs, so I was surprised when I needed to look in several different places and apply some guess work on how to use it in Rust.
@@ -56,7 +53,7 @@ So now that I had my opaque struct pointer, I could add the declarations:
 {% highlight Rust %}
 #[derive(Debug)]
 #[repr(C)]
-pub enum Status {
+enum Status {
     Success,
     Failure,
 }
@@ -106,3 +103,7 @@ impl Drop for MyLib {
 }
 {% endhighlight %}
 which make sure that every created handle gets destroyed. This time, there is no alternative return value option, so in case of failure, ```panic!```ing it is.
+
+## Updates
+### 2023-02-26:
+[u/frxstrem](https://www.reddit.com/r/rust/comments/11buo0f/comment/ja0v1gc/?utm_source=reddit&utm_medium=web2x&context=3) and [u/CocktailPerson](https://www.reddit.com/r/rust/comments/11buo0f/comment/ja1koa7/?utm_source=reddit&utm_medium=web2x&context=3) enlightened me to the need to add PhantomData and suggested that the repr(C) structs should not be public. Many thanks!
