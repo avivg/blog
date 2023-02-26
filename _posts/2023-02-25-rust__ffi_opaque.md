@@ -4,6 +4,9 @@ date: 2023-02-25 18:00 +02:00
 tags: [Rust, C, FFI, C-API]
 ---
 
+[2023-02-26 Update]: [u/frxstrem](https://www.reddit.com/r/rust/comments/11buo0f/comment/ja0v1gc/?utm_source=reddit&utm_medium=web2x&context=3) and [u/CocktailPerson](https://www.reddit.com/r/rust/comments/11buo0f/comment/ja1koa7/?utm_source=reddit&utm_medium=web2x&context=3) enlightened me to the need to add PhantomData and suggested that the repr(C) structs should not be public. Many thanks!
+
+---
 I finally got around to trying Rust in my day job. The first thing I needed was to make sure I know how anything I create can interract with our product (NN compiler). The API I wanted it to interract with, is a C-style API, which can be redeclared in rust pretty easily using the built-in standard FFI.
 
 The challenge was with opaque structures that are forward-declared in the API and use double pointer handles for creation. This is a pretty common pattern in C-Style APIs, so I was surprised when I needed to look in several different places and apply some guess work on how to use it in Rust.
@@ -33,16 +36,17 @@ The implementation doesn't really matter, but in the [full example](https://gith
 The first difficulty is how to define this opaque ```handle_t``` pointer. I found this [stack-overflow answer](https://stackoverflow.com/a/38315613/4016231), and it worked like a charm. I ended up with:
 {% highlight Rust %}
 #[repr(C)]
-pub struct CMyLib {
+struct CMyLib {
     _f: [u8; 0],
+    _m: core::marker::PhantomData<(*mut u8, core::marker::PhantomPinned)>,
 }
-pub type MyLibHandle = *mut CMyLib;
+type MyLibHandle = *mut CMyLib;
 {% endhighlight %}
 
 Which I wanted to create a little more idiomatically, so I added:
 {% highlight Rust %}
 impl CMyLib {
-    pub fn handle() -> MyLibHandle {
+    fn handle() -> MyLibHandle {
         std::ptr::null_mut()
     }
 }
@@ -76,7 +80,7 @@ pub struct MyLib {
 When it came to the double pointer in ```mylib_create```, I didn't find any text-book solution. I used some guess-work and deduction from various posts and ended up with:
 {% highlight Rust %}
 impl MyLib {
-    pub fn create() -> Result<Self, String> {
+    pub fn create() -> Result<Self, String> {   // String used for brevity
         let mut handle = CMyLib::handle();
         match unsafe { mylib_create(std::ptr::addr_of_mut!(handle)) } {
             Status::Success => Ok(Self { handle }),
