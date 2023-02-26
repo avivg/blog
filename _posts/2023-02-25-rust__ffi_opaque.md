@@ -89,7 +89,7 @@ impl MyLib {
 
 This will create a ```null``` handle using ```CMyLib::handle()``` and then pass the *address* of the newly created pointer to ```mylib_create```. This is exactly what a C/C++ code that use this API has to do.
 
-TBH, I'm not a huge fan of this result, since I wanted a ```MyLib::new()```, but that usually does not fail. I could ```panic!``` if the creation fail inside a '```new()```', but it seems somehow conflicting with the option to return ```FAIL``` from the C-style creator.
+TBH, I'm not a huge fan of this result, since I wanted a ```MyLib::new()```, but that usually does not fail. I could ```panic!``` if the creation fail inside a '```new()```', but it seems somehow conflicting with the option to return ```FAIL``` from the C-style creator. Having a ```new()``` return ```Result``` is also technically possible, but since it defies the convention, I decided to emphasize the difference by using a different name for the 'constructor'.
 
 To finish off this description, I should mention the other half of the "safe" code - the Drop:
 {% highlight Rust %}
