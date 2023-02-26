@@ -30,18 +30,18 @@ status_t mylib_dump(handle_t handle);
 
 The implementation doesn't really matter, but in the [full example](https://github.com/avivg/rust-opaque-example), it does some malloc, free, managing an integer field and dumps stuff.
 
-The first difficulty is how to define this opaque ```handle_t``` pointer. I found this [stack-overflow answer](https://stackoverflow.com/a/38315613/4016231), and it worked like a charm. I ended up with:
+The first difficulty is how to define this opaque ```handle_t``` pointer. [The Rustonomicon](https://doc.rust-lang.org/nomicon/ffi.html#representing-opaque-structs) specify to define it like this:
 {% highlight Rust %}
 #[repr(C)]
 struct CMyLib {
     _f: [u8; 0],
     _m: core::marker::PhantomData<(*mut u8, core::marker::PhantomPinned)>,
 }
-type MyLibHandle = *mut CMyLib;
 {% endhighlight %}
 
 Which I wanted to create a little more idiomatically, so I added:
 {% highlight Rust %}
+type MyLibHandle = *mut CMyLib;
 impl CMyLib {
     fn handle() -> MyLibHandle {
         std::ptr::null_mut()
